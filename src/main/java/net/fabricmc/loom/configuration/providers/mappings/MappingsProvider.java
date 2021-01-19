@@ -331,7 +331,13 @@ public class MappingsProvider extends DependencyProvider {
 				String encodedMindustryVersion = UrlEscapers.urlFragmentEscaper().escape(mindustryVersion);
 				String intermediaryArtifactUrl = getExtension().getIntermediaryUrl().apply(encodedMindustryVersion);
 				Path intermediaryJar = mappingsDir.resolve("v2-intermediary-" + mindustryVersion + ".jar");
-				DownloadUtil.downloadIfChanged(new URL(intermediaryArtifactUrl), intermediaryJar.toFile(), getProject().getLogger());
+				try {
+					DownloadUtil.downloadIfChanged(new URL(intermediaryArtifactUrl), intermediaryJar.toFile(), getProject().getLogger());
+				} catch (IOException ex) {
+					intermediaryArtifactUrl = getExtension().getIntermediaryUrl().apply(UrlEscapers.urlFragmentEscaper().escape("empty"));
+					intermediaryJar = mappingsDir.resolve("v2-intermediary-empty.jar");
+					DownloadUtil.downloadIfChanged(new URL(intermediaryArtifactUrl), intermediaryJar.toFile(), getProject().getLogger());
+				}
 
 				extractIntermediary(intermediaryJar, intermediaryTiny);
 			}
