@@ -94,7 +94,7 @@ public class MindustryProvider extends DependencyProvider {
 
 
 	private void downloadJars(Logger logger) throws IOException {
-		if (getExtension().isShareCaches() && !getExtension().isRootProject() && mindustryClientJar.exists() && mindustryServerJar.exists() && !isRefreshDeps()) {
+		if (mindustryClientJar.exists() && mindustryServerJar.exists()) {
 			return;
 		}
 		getProject().getLogger().error("Download mindustry and put desktop.jar and server.jar here: " + getExtension().getUserCache().toPath().toString());
