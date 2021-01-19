@@ -32,8 +32,6 @@ import org.apache.commons.io.FileUtils;
 import org.gradle.api.Project;
 
 import net.fabricmc.loom.LoomGradleExtension;
-import net.fabricmc.loom.configuration.providers.minecraft.MinecraftNativesProvider;
-import net.fabricmc.loom.configuration.providers.minecraft.assets.MinecraftAssetsProvider;
 
 public class SetupIntelijRunConfigs {
 	public static void setup(Project project) {
@@ -62,18 +60,18 @@ public class SetupIntelijRunConfigs {
 		Project rootProject = project.getRootProject();
 		LoomGradleExtension extension = project.getExtensions().getByType(LoomGradleExtension.class);
 
-		if (extension.ideSync()) {
-			//Ensures the assets are downloaded when idea is syncing a project
-			MinecraftAssetsProvider.provide(extension.getMinecraftProvider(), project);
-			MinecraftNativesProvider.provide(extension.getMinecraftProvider(), project);
-		}
+//		if (extension.ideSync()) {
+//			//Ensures the assets are downloaded when idea is syncing a project
+//			MindustryAssetsProvider.provide(extension.getMindustryProvider(), project);
+//			MindustryNativesProvider.provide(extension.getMindustryProvider(), project);
+//		}
 
 		String projectPath = project == rootProject ? "" : project.getPath().replace(':', '_');
 
 		File projectDir = rootProject.file(".idea");
 		File runConfigsDir = new File(projectDir, "runConfigurations");
-		File clientRunConfigs = new File(runConfigsDir, "Minecraft_Client" + projectPath + ".xml");
-		File serverRunConfigs = new File(runConfigsDir, "Minecraft_Server" + projectPath + ".xml");
+		File clientRunConfigs = new File(runConfigsDir, "Mindustry_Client" + projectPath + ".xml");
+		File serverRunConfigs = new File(runConfigsDir, "Mindustry_Server" + projectPath + ".xml");
 
 		if (!runConfigsDir.exists()) {
 			runConfigsDir.mkdirs();

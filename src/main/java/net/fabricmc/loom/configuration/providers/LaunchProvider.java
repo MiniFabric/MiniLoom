@@ -60,13 +60,15 @@ public class LaunchProvider extends DependencyProvider {
 				.property("fabric.remapClasspathFile", getRemapClasspathFile().getAbsolutePath())
 				.property("log4j.configurationFile", getLog4jConfigFile().getAbsolutePath())
 
-				.property("client", "java.library.path", getExtension().getNativesDirectory().getAbsolutePath())
-				.property("client", "org.lwjgl.librarypath", getExtension().getNativesDirectory().getAbsolutePath())
-
-				.argument("client", "--assetIndex")
-				.argument("client", getExtension().getMinecraftProvider().getVersionInfo().assetIndex.getFabricId(getExtension().getMinecraftProvider().getMinecraftVersion()))
-				.argument("client", "--assetsDir")
-				.argument("client", new File(getExtension().getUserCache(), "assets").getAbsolutePath());
+//				.property("client", "java.library.path", getExtension().getNativesDirectory().getAbsolutePath())
+//				.property("client", "org.lwjgl.librarypath", getExtension().getNativesDirectory().getAbsolutePath())
+//
+//				.argument("client", "--assetIndex")
+//				.argument("client", getExtension().getMindustryProvider().getVersionInfo().assetIndex.getFabricId(getExtension().getMindustryProvider().getVersion()))
+//				.argument("client", "--assetsDir")
+//				.argument("client", new File(getExtension().getUserCache(), "assets").getAbsolutePath())
+				.property("fabric.gameVersion", getExtension().getMindustryProvider().getVersion())
+				;
 
 		//Enable ansi by default for idea and vscode
 		if (new File(getProject().getRootDir(), ".vscode").exists()
@@ -113,7 +115,7 @@ public class LaunchProvider extends DependencyProvider {
 			remapClasspath.addAll(getProject().getConfigurations().getByName(inputConfiguration).getFiles());
 		}
 
-		remapClasspath.add(getExtension().getMinecraftMappedProvider().getIntermediaryJar());
+		remapClasspath.add(getExtension().getMindustryMappedProvider().getIntermediaryJar());
 
 		String str = remapClasspath.stream()
 				.map(File::getAbsolutePath)
@@ -128,7 +130,7 @@ public class LaunchProvider extends DependencyProvider {
 
 	@Override
 	public String getTargetConfig() {
-		return Constants.Configurations.MINECRAFT_NAMED;
+		return Constants.Configurations.MINDUSTRY_NAMED;
 	}
 
 	public static class LaunchConfig {

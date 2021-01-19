@@ -50,8 +50,7 @@ import org.gradle.api.tasks.options.Option;
 
 import net.fabricmc.loom.LoomGradleExtension;
 import net.fabricmc.loom.configuration.providers.mappings.MappingsProvider;
-import net.fabricmc.loom.configuration.providers.mappings.MojangMappingsDependency;
-import net.fabricmc.loom.configuration.providers.minecraft.MinecraftMappedProvider;
+import net.fabricmc.loom.configuration.providers.mindustry.MindustryMappedProvider;
 import net.fabricmc.loom.util.SourceRemapper;
 import net.fabricmc.lorenztiny.TinyMappingsJoiner;
 import net.fabricmc.mapping.tree.TinyMappingFactory;
@@ -101,7 +100,7 @@ public class MigrateMappingsTask extends AbstractLoomTask {
 		try {
 			TinyTree currentMappings = mappingsProvider.getMappings();
 			TinyTree targetMappings = getMappings(mappings);
-			migrateMappings(project, extension.getMinecraftMappedProvider(), inputDir, outputDir, currentMappings, targetMappings);
+			migrateMappings(project, extension.getMindustryMappedProvider(), inputDir, outputDir, currentMappings, targetMappings);
 			project.getLogger().lifecycle(":remapped project written to " + outputDir.toAbsolutePath());
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Error while loading mappings", e);
@@ -118,16 +117,8 @@ public class MigrateMappingsTask extends AbstractLoomTask {
 		Set<File> files;
 
 		try {
-			if (mappings.startsWith(MojangMappingsDependency.GROUP + ':' + MojangMappingsDependency.MODULE + ':') || mappings.startsWith("net.mojang.minecraft:mappings:")) {
-				if (!mappings.endsWith(":" + project.getExtensions().getByType(LoomGradleExtension.class).getMinecraftProvider().getMinecraftVersion())) {
-					throw new UnsupportedOperationException("Migrating Mojang mappings is currently only supported for the specified minecraft version");
-				}
-
-				files = new MojangMappingsDependency(project, getExtension()).resolve();
-			} else {
-				Dependency dependency = project.getDependencies().create(mappings);
-				files = project.getConfigurations().detachedConfiguration(dependency).resolve();
-			}
+			Dependency dependency = project.getDependencies().create(mappings);
+			files = project.getConfigurations().detachedConfiguration(dependency).resolve();
 		} catch (IllegalDependencyNotation ignored) {
 			project.getLogger().info("Could not locate mappings, presuming V2 Yarn");
 
@@ -158,7 +149,7 @@ public class MigrateMappingsTask extends AbstractLoomTask {
 		}
 	}
 
-	private static void migrateMappings(Project project, MinecraftMappedProvider minecraftMappedProvider,
+	private static void migrateMappings(Project project, MindustryMappedProvider mindustryMappedProvider,
 										Path inputDir, Path outputDir, TinyTree currentMappings, TinyTree targetMappings
 	) throws IOException {
 		project.getLogger().lifecycle(":joining mappings");
@@ -180,8 +171,8 @@ public class MigrateMappingsTask extends AbstractLoomTask {
 				JavaVersion.current();
 		mercury.setSourceCompatibility(javaVersion.toString());
 
-		mercury.getClassPath().add(minecraftMappedProvider.getMappedJar().toPath());
-		mercury.getClassPath().add(minecraftMappedProvider.getIntermediaryJar().toPath());
+		mercury.getClassPath().add(mindustryMappedProvider.getMappedJar().toPath());
+		mercury.getClassPath().add(mindustryMappedProvider.getIntermediaryJar().toPath());
 
 		mercury.getProcessors().add(MercuryRemapper.create(mappingSet));
 

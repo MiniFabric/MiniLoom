@@ -52,10 +52,9 @@ import net.fabricmc.loom.api.decompilers.LoomDecompiler;
 import net.fabricmc.loom.configuration.LoomDependencyManager;
 import net.fabricmc.loom.configuration.processors.JarProcessor;
 import net.fabricmc.loom.configuration.processors.JarProcessorManager;
-import net.fabricmc.loom.configuration.providers.MinecraftProvider;
+import net.fabricmc.loom.configuration.providers.MindustryProvider;
 import net.fabricmc.loom.configuration.providers.mappings.MappingsProvider;
-import net.fabricmc.loom.configuration.providers.mappings.MojangMappingsDependency;
-import net.fabricmc.loom.configuration.providers.minecraft.MinecraftMappedProvider;
+import net.fabricmc.loom.configuration.providers.mindustry.MindustryMappedProvider;
 
 public class LoomGradleExtension {
 	public String runDir = "run";
@@ -95,7 +94,7 @@ public class LoomGradleExtension {
 	 * Adding any jar processor will cause mapped mc jars to be stored per-project so that
 	 * different transformation can be applied in different projects.
 	 * This means remapping will need to be done individually per-project, which is slower when developing
-	 * more than one project using the same minecraft version.
+	 * more than one project using the same mindustry version.
 	 */
 	public void addJarProcessor(JarProcessor processor) {
 		jarProcessors.add(processor);
@@ -107,10 +106,6 @@ public class LoomGradleExtension {
 
 	public Mercury getOrCreateSrcMercuryCache(int id, Supplier<Mercury> factory) {
 		return srcMercuryCache[id] != null ? srcMercuryCache[id] : (srcMercuryCache[id] = factory.get());
-	}
-
-	public Dependency officialMojangMappings() {
-		return new MojangMappingsDependency(project, this);
 	}
 
 	public LoomGradleExtension(Project project) {
@@ -155,7 +150,7 @@ public class LoomGradleExtension {
 	}
 
 	public File getUserCache() {
-		File userCache = new File(project.getGradle().getGradleUserHomeDir(), "caches" + File.separator + "fabric-loom");
+		File userCache = new File(project.getGradle().getGradleUserHomeDir(), "caches" + File.separator + "fabric-loom-mindustry");
 
 		if (!userCache.exists()) {
 			userCache.mkdirs();
@@ -239,7 +234,7 @@ public class LoomGradleExtension {
 			return new File((String) project.property("fabric.loom.natives.dir"));
 		}
 
-		File natives = new File(getUserCache(), "natives/" + getMinecraftProvider().getMinecraftVersion());
+		File natives = new File(getUserCache(), "natives/" + getMindustryProvider().getVersion());
 
 		if (!natives.exists()) {
 			natives.mkdirs();
@@ -343,11 +338,11 @@ public class LoomGradleExtension {
 		return dependencyManager;
 	}
 
-	public MinecraftProvider getMinecraftProvider() {
-		return getDependencyManager().getProvider(MinecraftProvider.class);
+	public MindustryProvider getMindustryProvider() {
+		return getDependencyManager().getProvider(MindustryProvider.class);
 	}
 
-	public MinecraftMappedProvider getMinecraftMappedProvider() {
+	public MindustryMappedProvider getMindustryMappedProvider() {
 		return getMappingsProvider().mappedProvider;
 	}
 
@@ -414,7 +409,7 @@ public class LoomGradleExtension {
 	// Creates a new file each time its called, this is then held onto later when remapping the output jar
 	// Required as now when using parallel builds the old single file could be written by another sourceset compile task
 	public synchronized File getNextMixinMappings() {
-		File mixinMapping = new File(getProjectBuildCache(), "mixin-map-" + getMinecraftProvider().getMinecraftVersion() + "-" + getMappingsProvider().mappingsVersion + "." + mixinMappings.size() + ".tiny");
+		File mixinMapping = new File(getProjectBuildCache(), "mixin-map-" + getMindustryProvider().getVersion() + "-" + getMappingsProvider().mappingsVersion + "." + mixinMappings.size() + ".tiny");
 		mixinMappings.add(mixinMapping);
 		return mixinMapping;
 	}

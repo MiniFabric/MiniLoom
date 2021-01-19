@@ -111,49 +111,16 @@ public class RunConfig {
 		runConfig.runDir = "file://$PROJECT_DIR$/" + extension.runDir;
 		runConfig.vmArgs = "";
 
-		if ("launchwrapper".equals(extension.getLoaderLaunchMethod())) {
-			runConfig.mainClass = "net.minecraft.launchwrapper.Launch";
-			runConfig.programArgs += "--tweakClass " + ("client".equals(mode) ? Constants.LaunchWrapper.DEFAULT_FABRIC_CLIENT_TWEAKER : Constants.LaunchWrapper.DEFAULT_FABRIC_SERVER_TWEAKER);
-		} else {
-			runConfig.mainClass = "net.fabricmc.devlaunchinjector.Main";
-			runConfig.vmArgs = "-Dfabric.dli.config=" + encodeEscaped(extension.getDevLauncherConfig().getAbsolutePath()) + " -Dfabric.dli.env=" + mode.toLowerCase();
-		}
-
-		if (extension.getLoaderLaunchMethod().equals("launchwrapper")) {
-			// if installer.json found...
-			JsonObject installerJson = extension.getInstallerJson();
-
-			if (installerJson != null) {
-				List<String> sideKeys = ImmutableList.of(mode, "common");
-
-				// copy launchwrapper tweakers
-				if (installerJson.has("launchwrapper")) {
-					JsonObject launchwrapperJson = installerJson.getAsJsonObject("launchwrapper");
-
-					if (launchwrapperJson.has("tweakers")) {
-						JsonObject tweakersJson = launchwrapperJson.getAsJsonObject("tweakers");
-						StringBuilder builder = new StringBuilder();
-
-						for (String s : sideKeys) {
-							if (tweakersJson.has(s)) {
-								for (JsonElement element : tweakersJson.getAsJsonArray(s)) {
-									builder.append(" --tweakClass ").append(element.getAsString());
-								}
-							}
-						}
-
-						runConfig.programArgs += builder.toString();
-					}
-				}
-			}
-		}
+		runConfig.mainClass = "net.fabricmc.devlaunchinjector.Main";
+		runConfig.vmArgs = "-Dfabric.dli.config=" + encodeEscaped(extension.getDevLauncherConfig().getAbsolutePath()) + " -Dfabric.dli.env=" + mode.toLowerCase();
+		runConfig.vmArgs += "-Dfabric.gameVersion=\"" + project.getExtensions().getByType(LoomGradleExtension.class).getMindustryProvider().getVersion() + "\"";
 	}
 
 	public static RunConfig clientRunConfig(Project project) {
 		LoomGradleExtension extension = project.getExtensions().getByType(LoomGradleExtension.class);
 
 		RunConfig ideaClient = new RunConfig();
-		ideaClient.configName = "Minecraft Client";
+		ideaClient.configName = "Mindustry Client";
 		ideaClient.programArgs = "";
 		populate(project, extension, ideaClient, "client");
 		ideaClient.vmArgs += getOSClientJVMArgs();
@@ -166,7 +133,7 @@ public class RunConfig {
 		LoomGradleExtension extension = project.getExtensions().getByType(LoomGradleExtension.class);
 
 		RunConfig ideaServer = new RunConfig();
-		ideaServer.configName = "Minecraft Server";
+		ideaServer.configName = "Mindustry Server";
 		ideaServer.programArgs = "nogui ";
 		populate(project, extension, ideaServer, "server");
 		ideaServer.vmArgs += " -Dfabric.dli.main=" + getMainClass("server", extension);
@@ -228,7 +195,7 @@ public class RunConfig {
 
 		// Fallback to default class names, happens when in a loader dev env
 		if ("launchwrapper".equals(extension.getLoaderLaunchMethod())) {
-			return "net.minecraft.launchwrapper.Launch";
+			return "mindustry.launchwrapper.Launch";
 		}
 
 		return "net.fabricmc.loader.launch.knot.Knot" + side.substring(0, 1).toUpperCase(Locale.ROOT) + side.substring(1).toLowerCase(Locale.ROOT);

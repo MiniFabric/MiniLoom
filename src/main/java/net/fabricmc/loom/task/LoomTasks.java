@@ -83,13 +83,13 @@ public final class LoomTasks {
 
 	private static void registerRunTasks(TaskContainer tasks) {
 		tasks.register("runClient", RunClientTask.class, t -> {
-			t.setDescription("Starts a development version of the Minecraft client.");
+			t.setDescription("Starts a development version of the Mindustry client.");
 			t.dependsOn("downloadAssets");
 			t.setGroup("fabric");
 		});
 
 		tasks.register("runServer", RunServerTask.class, t -> {
-			t.setDescription("Starts a development version of the Minecraft server.");
+			t.setDescription("Starts a development version of the Mindustry server.");
 			t.setGroup("fabric");
 		});
 	}

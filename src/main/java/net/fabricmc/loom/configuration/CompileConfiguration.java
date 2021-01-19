@@ -45,7 +45,7 @@ import net.fabricmc.loom.build.mixin.KaptApInvoker;
 import net.fabricmc.loom.build.mixin.ScalaApInvoker;
 import net.fabricmc.loom.configuration.ide.SetupIntelijRunConfigs;
 import net.fabricmc.loom.configuration.providers.LaunchProvider;
-import net.fabricmc.loom.configuration.providers.MinecraftProvider;
+import net.fabricmc.loom.configuration.providers.MindustryProvider;
 import net.fabricmc.loom.configuration.providers.mappings.MappingsProvider;
 import net.fabricmc.loom.task.AbstractLoomTask;
 import net.fabricmc.loom.task.RemapAllSourcesTask;
@@ -55,7 +55,7 @@ import net.fabricmc.loom.util.Constants;
 import net.fabricmc.loom.util.SourceRemapper;
 
 /**
- * Add Minecraft dependencies to compile time.
+ * Add Mindustry dependencies to compile time.
  */
 public final class CompileConfiguration {
 	private CompileConfiguration() {
@@ -63,21 +63,21 @@ public final class CompileConfiguration {
 
 	public static void setupConfigurations(Project project) {
 		// Force add Mojang repository
-		addMavenRepo(project, "Mojang", "https://libraries.minecraft.net/");
+		addMavenRepo(project, "Mojang", "https://libraries.mindustry.net/");
 
 		Configuration modCompileClasspathConfig = project.getConfigurations().maybeCreate(Constants.Configurations.MOD_COMPILE_CLASSPATH);
 		modCompileClasspathConfig.setTransitive(true);
 		Configuration modCompileClasspathMappedConfig = project.getConfigurations().maybeCreate(Constants.Configurations.MOD_COMPILE_CLASSPATH_MAPPED);
 		modCompileClasspathMappedConfig.setTransitive(false);
 
-		Configuration minecraftNamedConfig = project.getConfigurations().maybeCreate(Constants.Configurations.MINECRAFT_NAMED);
-		minecraftNamedConfig.setTransitive(false); // The launchers do not recurse dependencies
-		Configuration minecraftDependenciesConfig = project.getConfigurations().maybeCreate(Constants.Configurations.MINECRAFT_DEPENDENCIES);
-		minecraftDependenciesConfig.setTransitive(false);
+		Configuration mindustryNamedConfig = project.getConfigurations().maybeCreate(Constants.Configurations.MINDUSTRY_NAMED);
+		mindustryNamedConfig.setTransitive(false); // The launchers do not recurse dependencies
+		Configuration mindustryDependenciesConfig = project.getConfigurations().maybeCreate(Constants.Configurations.MINDUSTRY_DEPENDENCIES);
+		mindustryDependenciesConfig.setTransitive(false);
 		Configuration loaderDependenciesConfig = project.getConfigurations().maybeCreate(Constants.Configurations.LOADER_DEPENDENCIES);
 		loaderDependenciesConfig.setTransitive(false);
-		Configuration minecraftConfig = project.getConfigurations().maybeCreate(Constants.Configurations.MINECRAFT);
-		minecraftConfig.setTransitive(false);
+		Configuration mindustryConfig = project.getConfigurations().maybeCreate(Constants.Configurations.MINDUSTRY);
+		mindustryConfig.setTransitive(false);
 
 		Configuration includeConfig = project.getConfigurations().maybeCreate(Constants.Configurations.INCLUDE);
 		includeConfig.setTransitive(false); // Dont get transitive deps
@@ -99,13 +99,13 @@ public final class CompileConfiguration {
 			}
 		}
 
-		extendsFrom(JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME, Constants.Configurations.MINECRAFT_NAMED, project);
-		extendsFrom(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME, Constants.Configurations.MINECRAFT_NAMED, project);
-		extendsFrom(JavaPlugin.TEST_COMPILE_CLASSPATH_CONFIGURATION_NAME, Constants.Configurations.MINECRAFT_NAMED, project);
-		extendsFrom(JavaPlugin.TEST_RUNTIME_CLASSPATH_CONFIGURATION_NAME, Constants.Configurations.MINECRAFT_NAMED, project);
+		extendsFrom(JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME, Constants.Configurations.MINDUSTRY_NAMED, project);
+		extendsFrom(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME, Constants.Configurations.MINDUSTRY_NAMED, project);
+		extendsFrom(JavaPlugin.TEST_COMPILE_CLASSPATH_CONFIGURATION_NAME, Constants.Configurations.MINDUSTRY_NAMED, project);
+		extendsFrom(JavaPlugin.TEST_RUNTIME_CLASSPATH_CONFIGURATION_NAME, Constants.Configurations.MINDUSTRY_NAMED, project);
 
-		extendsFrom(Constants.Configurations.LOADER_DEPENDENCIES, Constants.Configurations.MINECRAFT_DEPENDENCIES, project);
-		extendsFrom(Constants.Configurations.MINECRAFT_NAMED, Constants.Configurations.LOADER_DEPENDENCIES, project);
+		extendsFrom(Constants.Configurations.LOADER_DEPENDENCIES, Constants.Configurations.MINDUSTRY_DEPENDENCIES, project);
+		extendsFrom(Constants.Configurations.MINDUSTRY_NAMED, Constants.Configurations.LOADER_DEPENDENCIES, project);
 
 		extendsFrom(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, Constants.Configurations.MAPPINGS_FINAL, project);
 	}
@@ -153,7 +153,7 @@ public final class CompileConfiguration {
 
 			project1.getRepositories().maven(mavenArtifactRepository -> {
 				mavenArtifactRepository.setName("Mojang");
-				mavenArtifactRepository.setUrl("https://libraries.minecraft.net/");
+				mavenArtifactRepository.setUrl("https://libraries.mindustry.net/");
 			});
 
 			project1.getRepositories().mavenCentral();
@@ -161,7 +161,7 @@ public final class CompileConfiguration {
 			LoomDependencyManager dependencyManager = new LoomDependencyManager();
 			extension.setDependencyManager(dependencyManager);
 
-			dependencyManager.addProvider(new MinecraftProvider(project));
+			dependencyManager.addProvider(new MindustryProvider(project));
 			dependencyManager.addProvider(new MappingsProvider(project));
 			dependencyManager.addProvider(new LaunchProvider(project));
 
@@ -284,7 +284,7 @@ public final class CompileConfiguration {
 
 		if (project.getPluginManager().hasPlugin("org.jetbrains.kotlin.kapt")) {
 			// If loom is applied after kapt, then kapt will use the AP arguments too early for loom to pass the arguments we need for mixin.
-			throw new IllegalArgumentException("fabric-loom must be applied BEFORE kapt in the plugins { } block.");
+			throw new IllegalArgumentException("fabric-loom-mindustry must be applied BEFORE kapt in the plugins { } block.");
 		}
 	}
 

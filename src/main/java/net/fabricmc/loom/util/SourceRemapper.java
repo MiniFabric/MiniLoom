@@ -130,7 +130,7 @@ public class SourceRemapper {
 		if (!source.isDirectory()) {
 			// create tmp directory
 			isSrcTmp = true;
-			srcPath = Files.createTempDirectory("fabric-loom-src");
+			srcPath = Files.createTempDirectory("fabric-loom-mindustry-src");
 			ZipUtil.unpack(source, srcPath.toFile());
 		}
 
@@ -189,8 +189,8 @@ public class SourceRemapper {
 				}
 			}
 
-			m.getClassPath().add(extension.getMinecraftMappedProvider().getMappedJar().toPath());
-			m.getClassPath().add(extension.getMinecraftMappedProvider().getIntermediaryJar().toPath());
+			m.getClassPath().add(extension.getMindustryMappedProvider().getMappedJar().toPath());
+			m.getClassPath().add(extension.getMindustryMappedProvider().getIntermediaryJar().toPath());
 
 			Dependency annotationDependency = extension.getDependencyManager().getProvider(LaunchProvider.class).annotationDependency;
 			Set<File> files = project.getConfigurations().getByName(JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME)

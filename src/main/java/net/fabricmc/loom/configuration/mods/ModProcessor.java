@@ -58,7 +58,7 @@ import net.fabricmc.loom.LoomGradlePlugin;
 import net.fabricmc.loom.configuration.RemappedConfigurationEntry;
 import net.fabricmc.loom.configuration.processors.dependency.ModDependencyInfo;
 import net.fabricmc.loom.configuration.providers.mappings.MappingsProvider;
-import net.fabricmc.loom.configuration.providers.minecraft.MinecraftMappedProvider;
+import net.fabricmc.loom.configuration.providers.mindustry.MindustryMappedProvider;
 import net.fabricmc.loom.util.Constants;
 import net.fabricmc.loom.util.TinyRemapperMappingsHelper;
 import net.fabricmc.tinyremapper.InputTag;
@@ -132,7 +132,7 @@ public class ModProcessor {
 		String fromM = "intermediary";
 		String toM = "named";
 
-		MinecraftMappedProvider mappedProvider = extension.getMinecraftMappedProvider();
+		MindustryMappedProvider mappedProvider = extension.getMindustryMappedProvider();
 		MappingsProvider mappingsProvider = extension.getMappingsProvider();
 
 		Path mc = mappedProvider.getIntermediaryJar().toPath();

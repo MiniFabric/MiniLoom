@@ -61,7 +61,7 @@ public class GenerateSourcesTask extends AbstractLoomTask {
 	public void doTask() throws Throwable {
 		int threads = Runtime.getRuntime().availableProcessors();
 		Path javaDocs = getExtension().getMappingsProvider().tinyMappings.toPath();
-		Collection<Path> libraries = getProject().getConfigurations().getByName(Constants.Configurations.MINECRAFT_DEPENDENCIES).getFiles()
+		Collection<Path> libraries = getProject().getConfigurations().getByName(Constants.Configurations.MINDUSTRY_DEPENDENCIES).getFiles()
 						.stream().map(File::toPath).collect(Collectors.toSet());
 
 		DecompilationMetadata metadata = new DecompilationMetadata(threads, javaDocs, libraries);

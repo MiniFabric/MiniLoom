@@ -31,19 +31,19 @@ import java.util.function.Consumer;
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.Project;
 
-import net.fabricmc.loom.configuration.providers.MinecraftProvider;
+import net.fabricmc.loom.configuration.providers.MindustryProvider;
 import net.fabricmc.loom.configuration.providers.mappings.MappingsProvider;
-import net.fabricmc.loom.configuration.providers.minecraft.MinecraftMappedProvider;
+import net.fabricmc.loom.configuration.providers.mindustry.MindustryMappedProvider;
 import net.fabricmc.loom.util.Constants;
 
-public class MinecraftProcessedProvider extends MinecraftMappedProvider {
+public class MindustryProcessedProvider extends MindustryMappedProvider {
 	public static final String PROJECT_MAPPED_CLASSIFIER = "projectmapped";
 
 	private File projectMappedJar;
 
 	private final JarProcessorManager jarProcessorManager;
 
-	public MinecraftProcessedProvider(Project project, JarProcessorManager jarProcessorManager) {
+	public MindustryProcessedProvider(Project project, JarProcessorManager jarProcessorManager) {
 		super(project);
 		this.jarProcessorManager = jarProcessorManager;
 	}
@@ -65,8 +65,8 @@ public class MinecraftProcessedProvider extends MinecraftMappedProvider {
 
 		getProject().getRepositories().flatDir(repository -> repository.dir(getJarDirectory(getExtension().getProjectPersistentCache(), PROJECT_MAPPED_CLASSIFIER)));
 
-		getProject().getDependencies().add(Constants.Configurations.MINECRAFT_NAMED,
-				getProject().getDependencies().module("net.minecraft:minecraft:" + getJarVersionString(PROJECT_MAPPED_CLASSIFIER)));
+		getProject().getDependencies().add(Constants.Configurations.MINDUSTRY_NAMED,
+				getProject().getDependencies().module("mindustry:mindustry:" + getJarVersionString(PROJECT_MAPPED_CLASSIFIER)));
 	}
 
 	private void invalidateJars() {
@@ -84,10 +84,10 @@ public class MinecraftProcessedProvider extends MinecraftMappedProvider {
 	}
 
 	@Override
-	public void initFiles(MinecraftProvider minecraftProvider, MappingsProvider mappingsProvider) {
-		super.initFiles(minecraftProvider, mappingsProvider);
+	public void initFiles(MindustryProvider mindustryProvider, MappingsProvider mappingsProvider) {
+		super.initFiles(mindustryProvider, mappingsProvider);
 
-		projectMappedJar = new File(getJarDirectory(getExtension().getProjectPersistentCache(), PROJECT_MAPPED_CLASSIFIER), "minecraft-" + getJarVersionString(PROJECT_MAPPED_CLASSIFIER) + ".jar");
+		projectMappedJar = new File(getJarDirectory(getExtension().getProjectPersistentCache(), PROJECT_MAPPED_CLASSIFIER), "mindustry-" + getJarVersionString(PROJECT_MAPPED_CLASSIFIER) + ".jar");
 	}
 
 	@Override

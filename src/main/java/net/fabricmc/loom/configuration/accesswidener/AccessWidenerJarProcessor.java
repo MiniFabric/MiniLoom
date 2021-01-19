@@ -87,8 +87,8 @@ public class AccessWidenerJarProcessor implements JarProcessor {
 		//Remap accessWidener if its not named, allows for AE's to be written in intermediary
 		if (!accessWidener.getNamespace().equals("named")) {
 			try {
-				TinyRemapper tinyRemapper = loomGradleExtension.getMinecraftMappedProvider().getTinyRemapper("official", "named");
-				tinyRemapper.readClassPath(loomGradleExtension.getMinecraftMappedProvider().getRemapClasspath());
+				TinyRemapper tinyRemapper = loomGradleExtension.getMindustryMappedProvider().getTinyRemapper("official", "named");
+				tinyRemapper.readClassPath(loomGradleExtension.getMindustryMappedProvider().getRemapClasspath());
 
 				AccessWidenerRemapper remapper = new AccessWidenerRemapper(accessWidener, tinyRemapper.getRemapper(), "named");
 				accessWidener = remapper.remap();
