@@ -386,6 +386,10 @@ public class LoomGradleExtension {
 		return s -> intermediaryUrl.apply(s).toString();
 	}
 
+	public void setIntermediaryUrl(Function<String, Object> intermediaryUrl) {
+		this.intermediaryUrl = intermediaryUrl;
+	}
+
 	public boolean isRootProject() {
 		return project.getRootProject() == project;
 	}
