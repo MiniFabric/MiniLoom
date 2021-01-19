@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 
 import com.google.common.io.Files;
@@ -60,7 +61,7 @@ public class DownloadUtil {
 	 * @throws IOException If an exception occurs during the process
 	 */
 	public static void downloadIfChanged(URL from, File to, Logger logger, boolean quiet) throws IOException {
-		HttpURLConnection connection = (HttpURLConnection) from.openConnection();
+		URLConnection connection = from.openConnection();
 
 		if (LoomGradlePlugin.refreshDeps) {
 			getETagFile(to).delete();
@@ -84,22 +85,23 @@ public class DownloadUtil {
 
 		// Try make the connection, it will hang here if the connection is bad
 		connection.connect();
-
-		int code = connection.getResponseCode();
-
-		if ((code < 200 || code > 299) && code != HttpURLConnection.HTTP_NOT_MODIFIED) {
-			//Didn't get what we expected
-			throw new IOException(connection.getResponseMessage() + " for " + from);
-		}
-
 		long modifyTime = connection.getHeaderFieldDate("Last-Modified", -1);
 
-		if (to.exists() && (code == HttpURLConnection.HTTP_NOT_MODIFIED || modifyTime > 0 && to.lastModified() >= modifyTime)) {
-			if (!quiet) {
-				logger.info("'{}' Not Modified, skipping.", to);
+		if (connection instanceof HttpURLConnection) {
+			int code = ((HttpURLConnection) connection).getResponseCode();
+
+			if ((code < 200 || code > 299) && code != HttpURLConnection.HTTP_NOT_MODIFIED) {
+				//Didn't get what we expected
+				throw new IOException(((HttpURLConnection) connection).getResponseMessage() + " for " + from);
 			}
 
-			return; //What we've got is already fine
+			if (to.exists() && (code == HttpURLConnection.HTTP_NOT_MODIFIED || modifyTime > 0 && to.lastModified() >= modifyTime)) {
+				if (!quiet) {
+					logger.info("'{}' Not Modified, skipping.", to);
+				}
+
+				return; //What we've got is already fine
+			}
 		}
 
 		long contentLength = connection.getContentLengthLong();
