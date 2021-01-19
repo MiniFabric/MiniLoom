@@ -108,20 +108,20 @@ public class MappingsProvider extends DependencyProvider {
 		boolean isV2;
 
 		// Only do this for official yarn, there isn't really a way we can get the mc version for all mappings
-		if (dependency.getDependency().getGroup() != null && dependency.getDependency().getGroup().equals("net.fabricmc") && dependency.getDependency().getName().equals("yarn") && dependency.getDependency().getVersion() != null) {
-			String yarnVersion = dependency.getDependency().getVersion();
-			char separator = yarnVersion.contains("+build.") ? '+' : yarnVersion.contains("-") ? '-' : '.';
-			String yarnMindustryVersion = yarnVersion.substring(0, yarnVersion.lastIndexOf(separator));
-
-			if (!yarnMindustryVersion.equalsIgnoreCase(mindustryVersion)) {
-				throw new RuntimeException(String.format("Mindustry Version (%s) does not match yarn's mindustry version (%s)", mindustryVersion, yarnMindustryVersion));
-			}
-
-			// We can save reading the zip file + header by checking the file name
-			isV2 = mappingsJar.getName().endsWith("-v2.jar");
-		} else {
+//		if (dependency.getDependency().getGroup() != null && dependency.getDependency().getGroup().equals("net.fabricmc") && dependency.getDependency().getName().equals("yarn") && dependency.getDependency().getVersion() != null) {
+//			String yarnVersion = dependency.getDependency().getVersion();
+//			char separator = yarnVersion.contains("+build.") ? '+' : yarnVersion.contains("-") ? '-' : '.';
+//			String yarnMindustryVersion = yarnVersion.substring(0, yarnVersion.lastIndexOf(separator));
+//
+//			if (!yarnMindustryVersion.equalsIgnoreCase(mindustryVersion)) {
+//				throw new RuntimeException(String.format("Mindustry Version (%s) does not match yarn's mindustry version (%s)", mindustryVersion, yarnMindustryVersion));
+//			}
+//
+//			// We can save reading the zip file + header by checking the file name
+//			isV2 = mappingsJar.getName().endsWith("-v2.jar");
+//		} else {
 			isV2 = doesJarContainV2Mappings(mappingsJar.toPath());
-		}
+//		}
 
 		this.mappingsVersion = version + (isV2 ? "-v2" : "");
 
