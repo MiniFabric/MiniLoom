@@ -88,6 +88,40 @@ public class HashedDownloadUtil {
 		saveSha1(to, expectedHash, logger);
 	}
 
+	public static void download(URL from, File to, Logger logger, boolean quiet) throws IOException {
+		if (LoomGradlePlugin.refreshDeps) {
+			delete(to);
+		}
+
+		if (to.exists()) {
+			return;
+		}
+
+		HttpURLConnection connection = (HttpURLConnection) from.openConnection();
+		connection.setRequestProperty("Accept-Encoding", "gzip");
+		connection.connect();
+
+		int code = connection.getResponseCode();
+
+		if ((code < 200 || code > 299) && code != HttpURLConnection.HTTP_NOT_MODIFIED) {
+			//Didn't get what we expected
+			throw new IOException(connection.getResponseMessage() + " for " + from);
+		}
+
+		long contentLength = connection.getContentLengthLong();
+
+		if (!quiet && contentLength >= 0) {
+			logger.info("'{}' Changed, downloading {}", to, DownloadUtil.toNiceSize(contentLength));
+		}
+
+		try { // Try download to the output
+			FileUtils.copyInputStreamToFile(connection.getInputStream(), to);
+		} catch (IOException e) {
+			delete(to); // Probably isn't good if it fails to copy/save
+			throw e;
+		}
+	}
+
 	private static File getSha1File(File file) {
 		return new File(file.getAbsoluteFile().getParentFile(), file.getName() + ".sha1");
 	}

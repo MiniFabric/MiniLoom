@@ -26,8 +26,12 @@ package net.fabricmc.loom.configuration.providers;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.function.Consumer;
 import java.util.zip.ZipError;
+
+import net.fabricmc.loom.LoomGradlePlugin;
+import net.fabricmc.loom.util.HashedDownloadUtil;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -94,18 +98,17 @@ public class MindustryProvider extends DependencyProvider {
 
 
 	private void downloadJars(Logger logger) throws IOException {
-		if (mindustryClientJar.exists() && mindustryServerJar.exists()) {
+		if (mindustryClientJar.exists() && mindustryServerJar.exists() && !LoomGradlePlugin.refreshDeps) {
 			return;
 		}
-		getProject().getLogger().error("Download mindustry and put desktop.jar and server.jar here: " + getExtension().getUserCache().toPath().toString());
-		getProject().getLogger().error("Rename to mindustry-" + version + "-client.jar and mindustry-" + version + "-server.jar, respectively.");
-		throw new RuntimeException();
-		//todo download mindustry
-//		MindustryVersionInfo.Downloads client = versionInfo.downloads.get("client");
-//		MindustryVersionInfo.Downloads server = versionInfo.downloads.get("server");
-//
-//		HashedDownloadUtil.downloadIfInvalid(new URL(client.url), mindustryClientJar, client.sha1, logger, false);
-//		HashedDownloadUtil.downloadIfInvalid(new URL(server.url), mindustryServerJar, server.sha1, logger, false);
+		if (LoomGradlePlugin.refreshDeps) {
+			HashedDownloadUtil.delete(mindustryClientJar);
+			HashedDownloadUtil.delete(mindustryServerJar);
+			HashedDownloadUtil.delete(mindustryMergedJar);
+		}
+
+		HashedDownloadUtil.download(new URL("https://github.com/Anuken/Mindustry/releases/download/v" + version + "/Mindustry.jar"), mindustryClientJar, logger, false);
+		HashedDownloadUtil.download(new URL("https://github.com/Anuken/Mindustry/releases/download/v" + version + "/server-release.jar"), mindustryServerJar, logger, false);
 	}
 
 	private void mergeJars(Logger logger) throws IOException {
